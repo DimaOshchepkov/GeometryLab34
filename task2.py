@@ -82,7 +82,6 @@ def locate_point_in_trapezoids(edges_in_strip: List[Edge], point: Point) -> Opti
     return None
 
 
-# Визуализация графа, горизонтальных полос и указанной точки.
 def plot_graph_edges_and_point(vertices: List[Point], edges: List[Edge], point: Point, strips: List[float]) -> None:
     """Визуализирует граф, горизонтальные полосы и указанную точку.
 
@@ -99,18 +98,18 @@ def plot_graph_edges_and_point(vertices: List[Point], edges: List[Edge], point: 
 
     # Построение графа G
     for edge in edges:
-        plt.plot([edge[0][0], edge[1][0]], [edge[0][1], edge[1][1]], 'b-')
+        plt.plot([edge[0][0], edge[1][0]], [edge[0][1], edge[1][1]], color='purple', linestyle='-', linewidth=2)
 
     # Построение вершин графа
     x_vertices, y_vertices = zip(*vertices)
-    plt.scatter(x_vertices, y_vertices, color='red', zorder=5)
+    plt.scatter(x_vertices, y_vertices, color='orange', zorder=5, s=100)
 
     # Построение горизонтальных полос
     for strip in strips:
         plt.axhline(y=strip, color='gray', linestyle='--')
 
     # Построение точки A
-    plt.scatter([point[0]], [point[1]], color='green', zorder=5, label='Point A')
+    plt.scatter([point[0]], [point[1]], color='green', zorder=5, label='Point A', s=100)
     plt.xlabel('X')
     plt.ylabel('Y')
     plt.title('Граф с точкой A')
