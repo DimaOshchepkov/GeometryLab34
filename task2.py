@@ -60,6 +60,32 @@ def find_edges_in_strip(edges: List[Edge], strip_y1: float, strip_y2: float) -> 
             edges_in_strip.append(edge)
     return edges_in_strip
 
+def find_intersection_points(edges: List[Edge], y: float) -> List[Point]:
+    intersection_points = []
+    
+    for edge in edges:
+        # Проверяем, что обе точки ребра находятся на разных сторонах горизонтальной полосы
+        if min(edge[0][1], edge[1][1]) <= y <= max(edge[0][1], edge[1][1]):
+            # Вычисляем x-координату точки пересечения
+            x_intersection = edge[0][0] + (y - edge[0][1]) * (edge[1][0] - edge[0][0]) / (edge[1][1] - edge[0][1])
+            intersection_points.append((x_intersection, y))
+    
+    intersection_points.sort()  # Сортируем точки пересечения по координате x
+    return intersection_points
+
+def find_nearest_points(intersection_points: List[Point], point_A: Point) -> Tuple[Point, Point]:
+    left_point = None
+    right_point = None
+    
+    for point in intersection_points:
+        if point[0] < point_A[0]:
+            left_point = point
+        elif point[0] > point_A[0]:
+            right_point = point
+            break  # Достаточно найти первую точку справа от A
+    
+    return left_point, right_point
+
 
 # Определение трапеции, содержащей заданную точку в пересекающихся ребрах.
 def locate_point_in_trapezoids(edges_in_strip: List[Edge], point: Point) -> Optional[Tuple[Point, Point, Point, Point]]:
@@ -133,7 +159,16 @@ else:
 
 if strip_y1 is not None and strip_y2 is not None:
     edges_in_strip: List[Edge] = find_edges_in_strip(edges, strip_y1, strip_y2)
-    trapezoid: Optional[Tuple[Point, Point, Point, Point]] = locate_point_in_trapezoids(edges_in_strip, point_A)
+    lower_point = find_intersection_points(edges_in_strip, strip_y1)
+    nearest_lower_point = find_nearest_points(lower_point, point_A)
+    
+    height_point = find_intersection_points(edges_in_strip, strip_y2)
+    nearest_height_point = find_nearest_points(height_point, point_A)
+    
+    trapezoid: Optional[Tuple[Point, Point, Point, Point]] = (lower_point[0],
+                                                              height_point[0],
+                                                              height_point[1],
+                                                              lower_point[1])
 else:
     trapezoid = None
 
