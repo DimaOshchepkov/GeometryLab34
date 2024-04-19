@@ -73,7 +73,7 @@ def find_intersection_points(edges: List[Edge], y: float) -> List[Point]:
     intersection_points.sort()  # Сортируем точки пересечения по координате x
     return intersection_points
 
-def find_nearest_points(intersection_points: List[Point], point_A: Point) -> Tuple[Point, Point]:
+def find_nearest_points(intersection_points: List[Point], point_A: Point) -> Optional[Tuple[Point, Point]]:
     left_point = None
     right_point = None
     
@@ -84,6 +84,8 @@ def find_nearest_points(intersection_points: List[Point], point_A: Point) -> Tup
             right_point = point
             break  # Достаточно найти первую точку справа от A
     
+    #if left_point is None or right_point is None or left_point[0] >= right_point[0]:
+        #return None
     return left_point, right_point
 
 
@@ -148,7 +150,7 @@ def plot_graph_edges_and_point(vertices: List[Point], edges: List[Edge], point: 
 vertices: List[Point] = [(1, 1), (10, 10), (8, 2), (6, 0), (11, 5), (14, 2), (11, 0)]
 edges: List[Edge] = [((1, 1), (10, 10)), ((10, 10), (8, 2)), ((8, 2), (6, 0)), ((6, 0), (1, 1)),
                      ((5, 5), (11, 5)), ((11, 5), (14, 2)), ((14, 2), (11, 0)), ((11, 0), (5, 0))]
-point_A: Point = (6, 3)
+point_A: Point = (1, 8)
 
 horizontal_strips: List[float] = create_horizontal_strips(vertices)
 strip_index: int = find_strip_for_point(horizontal_strips, point_A)
@@ -157,6 +159,7 @@ if 0 <= strip_index < len(horizontal_strips) - 1:
 else:
     strip_y1, strip_y2 = None, None
 
+trapezoid : Optional[Tuple[Point, Point, Point, Point]] = None
 if strip_y1 is not None and strip_y2 is not None:
     edges_in_strip: List[Edge] = find_edges_in_strip(edges, strip_y1, strip_y2)
     lower_point = find_intersection_points(edges_in_strip, strip_y1)
@@ -165,10 +168,11 @@ if strip_y1 is not None and strip_y2 is not None:
     height_point = find_intersection_points(edges_in_strip, strip_y2)
     nearest_height_point = find_nearest_points(height_point, point_A)
     
-    trapezoid: Optional[Tuple[Point, Point, Point, Point]] = (lower_point[0],
-                                                              height_point[0],
-                                                              height_point[1],
-                                                              lower_point[1])
+    if nearest_lower_point is not None and nearest_height_point is not None:
+        trapezoid: Optional[Tuple[Point, Point, Point, Point]] = (lower_point[0],
+                                                                height_point[0],
+                                                                height_point[1],
+                                                                lower_point[1])
 else:
     trapezoid = None
 
